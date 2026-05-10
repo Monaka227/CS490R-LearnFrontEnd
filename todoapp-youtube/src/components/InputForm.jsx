@@ -1,4 +1,5 @@
 import React from 'react'
+import { useState } from 'react';
 
 export const InputForm = ({ taskList, setTaskList }) => {
     const [inputText, setInputText] = useState("");
@@ -13,10 +14,15 @@ export const InputForm = ({ taskList, setTaskList }) => {
         setTaskList([
             ...taskList,
             {
-                text: inputText
+                id: taskList.length,
+                text: inputText,
+                completed: false
             }
         ]);
         // console.log(taskList);
+
+        // delete the text in input form after submit
+        setInputText("");
 
 
     }
@@ -30,7 +36,7 @@ export const InputForm = ({ taskList, setTaskList }) => {
     return (
         <div className="inputForm">
         <form onSubmit={handleSubmit}>
-            <input type="text" onChange={handleChange} />
+            <input type="text" onChange={handleChange} value={inputText}/>
             <button>
             <i className="fa-solid fa-plus"></i>
             </button>

@@ -2,6 +2,7 @@ import './App.css';
 import { Title } from './components/Title'
 import { InputForm } from './components/InputForm'
 import { TodoList } from './components/TodoList';
+import { useState } from 'react';
 
 function App() {
   // 配列を用意して、タスクを管理する

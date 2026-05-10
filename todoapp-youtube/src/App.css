@@ -50,20 +50,32 @@ header {
   justify-content: center;
 }
 
-.completed {
+.todo.completed {
   text-decoration: line-through;
   opacity: 0.5;
 }
 
 
+.icons button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  margin-left: 5px;
+  padding: 0; /* ボタン自体の余白を消す */
+}
+
 .icons .fa-check {
   padding: 0.487rem .5rem;
   background: rgb(83, 164, 195);
+  border-radius: 0.3rem;
+  transition: all 0.3s;
 }
 
 .icons .fa-trash {
   padding: 0.487rem .5rem;
   background: rgb(197, 70, 81);
+  border-radius: 0.3rem;
+  transition: all 0.3s;
 }
 
 .todoText {

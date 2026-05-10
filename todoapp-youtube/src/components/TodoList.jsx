@@ -8,6 +8,12 @@ export const TodoList = () => {
                 <div className="todoText">
                     <span>Programming</span>
                 </div>
+                <div className="icons">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <div className="icons">
+                    <i class="fa-solid fa-trash"></i>
+                </div>
             </div>
         </div>
       

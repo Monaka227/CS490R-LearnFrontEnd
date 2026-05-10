@@ -9,10 +9,12 @@ export const TodoList = () => {
                     <span>Programming</span>
                 </div>
                 <div className="icons">
-                    <i class="fa-solid fa-check"></i>
-                </div>
-                <div className="icons">
-                    <i class="fa-solid fa-trash"></i>
+                    <button>
+                    <i className="fa-solid fa-check"></i>
+                    </button>
+                    <button>
+                    <i className="fa-solid fa-trash"></i>
+                    </button>
                 </div>
             </div>
         </div>

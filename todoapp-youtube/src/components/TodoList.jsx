@@ -1,12 +1,13 @@
 import React from 'react'
 
-export const TodoList = () => {
+export const TodoList = ({ taskList, setTaskList }) => {
   return (
     <div className="todoList">
         <div className="todos">
+            {taskList.map(task => (
             <div className="todo">
                 <div className="todoText">
-                    <span>Programming</span>
+                    <span>{task.text}</span>
                 </div>
                 <div className="icons">
                     <button>
@@ -17,6 +18,7 @@ export const TodoList = () => {
                     </button>
                 </div>
             </div>
+            ))}
         </div>
       
     </div>

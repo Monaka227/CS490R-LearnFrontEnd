@@ -1,15 +1,29 @@
 import React from 'react'
 
-export const InputForm = () => {
+export const InputForm = ({ taskList, setTaskList }) => {
+    const [inputText, setInputText] = useState("");
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
         /* submit the text from input form */
+        console.log(inputText);
+
+        /* add the new task to the task list */
+        setTaskList([
+            ...taskList,
+            {
+                text: inputText
+            }
+        ]);
+        // console.log(taskList);
+
+
     }
 
     const handleChange = (e) => {
         /* update the state of input form */
-        var inputText = e.target.value;
+        setInputText(e.target.value);
         console.log(inputText);
     }
 

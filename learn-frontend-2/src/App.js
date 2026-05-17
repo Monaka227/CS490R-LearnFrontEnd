@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import { ReviewList } from './components/ReviewList';
 
 function App() {
   // dummy data for testing
@@ -28,17 +29,10 @@ function App() {
     <div className="App">
       {/* add header and review list later */}
       <h1>Board Game Review Platform</h1>
-      
-      {/* testing */}
-      <div className="review-list-preview">
-        {dummyReviews.map((review) => (
-          <div key={review.id} style={{ border: '1px solid #ccc', margin: '10px', padding: '10px' }}>
-            <h3>{review.title}</h3>
-            <p>Rating: {review.rating} / 5</p>
-            <p>{review.body}</p>
-          </div>
-        ))}
-      </div>
+
+      {/* pass dummy reviews as a prop to ReviewList */}
+      <ReviewList reviews={dummyReviews} />
+
     </div>
   );
 }

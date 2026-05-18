@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import { ReviewList } from './components/ReviewList';
+import { Header } from './components/Header';
 
 function App() {
   // dummy data for testing
@@ -29,6 +30,7 @@ function App() {
     <div className="App">
       {/* add header and review list later */}
       <h1>Board Game Review Platform</h1>
+      <Header />
 
       {/* pass dummy reviews as a prop to ReviewList */}
       <ReviewList reviews={dummyReviews} />

@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { ReviewList } from './components/ReviewList';
 import { Header } from './components/Header';
+import { GameDetails } from './components/GameDetails';
 
 function App() {
   // make a state to keep the game lists
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [selectedGameId, setSelectedGameId] = useState(null);
 
 
@@ -27,20 +27,19 @@ useEffect(() => {
   }, []);
 
   return (
-    <div className="App" style={{ backgroundColor: '#f9f9f9', minHeight: '100vh', paddingBottom: '40px' }}>
+    <div className="App">
       <Header />
       
-      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 20px' }}>
+      <div className="app-content">
         {loading ? (
-          <p style={{ textAlign: 'center', marginTop: '40px' }}>Loading...</p>
+          <p className="status-message">Loading...</p>
         ) : selectedGameId ? (
           /* if game is selected, show the review page */
           <div>
-            <button onClick={() => setSelectedGameId(null)} style={{ margin: '20px 0', padding: '8px 16px' }}>
+            <button className="back-button" onClick={() => setSelectedGameId(null)}>
               ⬅ Back to Games
             </button>
-            {/* out review componets later */}
-            <p>Game ID: {selectedGameId} 's reviews. Create this page later</p>
+            <GameDetails gameId={selectedGameId} />
           </div>
         ) : (
           /* if no game is selected, show the game list */

@@ -3,7 +3,21 @@
   margin: 10px;
   padding: 10px;
   border-radius: 5px;
-  background-color: white; /* カードの背景を白に */
+  background-color: white;
+}
+
+.view-reviews-link {
+  color: #3498db;
+  font-weight: bold;
+  font-size: 0.9rem;
+  display: inline-block;
+  margin-top: 10px;
+  transition: color 0.2s;
+}
+
+.review-card:hover .view-reviews-link {
+  color: #2980b9;
+  text-decoration: underline;
 }
 
 .review-rating {

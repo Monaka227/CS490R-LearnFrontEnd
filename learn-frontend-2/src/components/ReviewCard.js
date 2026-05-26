@@ -11,7 +11,7 @@ export const ReviewCard = ({ review, onCardClick }) => {
       <p>{review.description || "No description available."}</p>
       
       {/* there is no rating */}
-      <span style={{ color: '#3498db', fontWeight: 'bold', fontSize: '0.9rem' }}>
+      <span className="view-reviews-link">
         View Reviews ➔
       </span>
     </div>

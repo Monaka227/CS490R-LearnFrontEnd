@@ -1,40 +1,53 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import { ReviewList } from './components/ReviewList';
 import { Header } from './components/Header';
 
 function App() {
-  // dummy data for testing
-  const dummyReviews = [
-    {
-      id: 1,
-      title: "Catan",
-      rating: 5,
-      body: "An absolute classic! Gathering resources and trading with friends is always intense and fun."
-    },
-    {
-      id: 2,
-      title: "Terraforming Mars",
-      rating: 4,
-      body: "Great strategy game with high complexity. Building the engine feels extremely rewarding."
-    },
-    {
-      id: 3,
-      title: "Arboretum",
-      rating: 4,
-      body: "Beautiful artwork but deceptively brutal strategy. Highly recommend for card game lovers."
-    }
-  ];
+  // make a state to keep the game lists
+  const [games, setGames] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const [selectedGameId, setSelectedGameId] = useState(null);
+
+
+  // use useEffect to fetch the game list from the backend when the component mounts
+useEffect(() => {
+    // get the game list from the backend API
+    fetch('http://localhost:3000/api/games')
+      .then((response) => response.json())
+      .then((data) => {
+        setGames(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        setLoading(false);
+      });
+  }, []);
 
   return (
-    <div className="App">
-      {/* add header and review list later */}
-      <h1>Board Game Review Platform</h1>
+    <div className="App" style={{ backgroundColor: '#f9f9f9', minHeight: '100vh', paddingBottom: '40px' }}>
       <Header />
-
-      {/* pass dummy reviews as a prop to ReviewList */}
-      <ReviewList reviews={dummyReviews} />
-
+      
+      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 20px' }}>
+        {loading ? (
+          <p style={{ textAlign: 'center', marginTop: '40px' }}>Loading...</p>
+        ) : selectedGameId ? (
+          /* if game is selected, show the review page */
+          <div>
+            <button onClick={() => setSelectedGameId(null)} style={{ margin: '20px 0', padding: '8px 16px' }}>
+              ⬅ Back to Games
+            </button>
+            {/* out review componets later */}
+            <p>Game ID: {selectedGameId} 's reviews. Create this page later</p>
+          </div>
+        ) : (
+          /* if no game is selected, show the game list */
+          /* pass the function to set the selected game ID as a prop */
+          <ReviewList reviews={games} onGameClick={setSelectedGameId} />
+        )}
+      </div>
     </div>
   );
 }

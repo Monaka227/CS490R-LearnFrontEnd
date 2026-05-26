@@ -1,12 +1,19 @@
 import React from 'react';
 import './ReviewCard.css';
 
-export const ReviewCard = ({ review }) => {
+// add oncardclick prop to be able to click the whole card
+export const ReviewCard = ({ review, onCardClick }) => {
   return (
-    <div className="review-card">
+    // be able to click the whole card
+    <div className="review-card" onClick={onCardClick} style={{ cursor: 'pointer' }}>
       <h3>{review.title}</h3>
-      <p className="review-rating">Rating: {'⭐'.repeat(review.rating)} ({review.rating}/5)</p>
-      <p>{review.body}</p>
+      <p style={{ color: '#7f8c8d', fontSize: '0.85rem' }}>Publisher: {review.publisher}</p>
+      <p>{review.description || "No description available."}</p>
+      
+      {/* there is no rating */}
+      <span style={{ color: '#3498db', fontWeight: 'bold', fontSize: '0.9rem' }}>
+        View Reviews ➔
+      </span>
     </div>
   );
 };

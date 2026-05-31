@@ -32,7 +32,6 @@ export const GameDetails = ({ gameId }) => {
     <div className="game-details">
       <h2>User Reviews</h2>
       
-      // input form
       <form className="review-form">
         <h3>Write a new Review</h3>
         <div className="form-group">

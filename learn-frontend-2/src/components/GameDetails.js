@@ -4,12 +4,14 @@ import './ReviewCard.css';
 export const GameDetails = ({ gameId }) => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // week 4: 3 states for manage form inputs
   const [formTitle, setFormTitle] = useState('');
   const [formRating, setFormRating] = useState(5);
   const [formBody, setFormBody] = useState('');
 
   useEffect(() => {
-    // not fetching all game reviews and then filtering on the frontend, but directly fetching only the reviews for the selected game from the backend!
+    // Week 3: not fetching all game reviews and then filtering on the frontend, but directly fetching only the reviews for the selected game from the backend!
     fetch(`http://localhost:3000/api/reviews/games/${gameId}`) // <-- backend URL
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch reviews for this game");
@@ -26,21 +28,79 @@ export const GameDetails = ({ gameId }) => {
       });
   }, [gameId]);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const newReview = {
+      title: formTitle,
+      rating: formRating,
+      body: formBody,
+      game_id: gameId, // associate the review with the current game
+    };
+
+    fetch('http://localhost:3000/api/reviews', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newReview),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to submit review");
+        return res.json();
+      })
+      .then((savedReview) => {
+        console.log("Review submitted successfully:", savedReview);
+
+        setReviews((prevReviews) => [...prevReviews, savedReview]);
+        // Reset form fields after successful submission
+        setFormTitle('');
+        setFormRating(5);
+        setFormBody('');
+      })
+      .catch((err) => {
+        console.error("Error submitting review:", err);
+        alert("Failed to submit review. Please try again.");
+      });
+
+    // For now, just log the form data to the console
+    // check all fields
+    console.log("--- Form Submitted ---");
+    console.log("Game ID:", gameId);
+    console.log("Title:", formTitle);
+    console.log("Rating:", formRating);
+    console.log("Body:", formBody);
+
+    // Here I would typically send the form data to the backend API to create a new review
+
+  }
+
   if (loading) return <p style={{ textAlign: 'center' }}>Loading reviews...</p>;
 
   return (
     <div className="game-details">
       <h2>User Reviews</h2>
       
-      <form className="review-form">
+      <form className="review-form" onSubmit={handleSubmit}>
         <h3>Write a new Review</h3>
         <div className="form-group">
           <label>Title: </label>
-          <input type="text" name="title" placeholder="Review Title" required />
+          <input 
+            type="text" 
+            name="title" 
+            placeholder="Review 
+            Title" required 
+            value={formTitle}
+            onChange={(e) => setFormTitle(e.target.value)}
+          />
         </div>
         <div className="form-group">
           <label>Rating: </label>
-          <select name="rating" required>
+          <select 
+            name="rating" 
+            value={formRating} // controlled component
+            onChange={(e) => setFormRating(e.target.value)} // update state on change
+            required>
             <option value="">Select Rating</option>
             <option value="1">⭐⭐⭐⭐⭐ (5/5)</option>
             <option value="2">⭐⭐⭐⭐ (4/5)</option>
@@ -51,9 +111,15 @@ export const GameDetails = ({ gameId }) => {
         </div>
         <div className="form-group">
           <label>Review: </label>
-          <textarea name="body" placeholder="Write your review here..." required></textarea>
+          <textarea 
+            name="body" 
+            placeholder="Write your review here..." 
+            required 
+            value={formBody}
+            onChange={(e) => setFormBody(e.target.value)}
+          ></textarea>
         </div>
-        <button type="submit">Post Review</button>
+        <button type="submit" className="submit-button">Post Review</button>
 
       </form>
 

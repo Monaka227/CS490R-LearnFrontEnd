@@ -4,6 +4,7 @@ import { ReviewList } from './components/ReviewList';
 import { Header } from './components/Header';
 import { GameDetails } from './components/GameDetails';
 import { Login } from './components/Login'; // week4
+import { UpdateAccount } from './components/UpdateAccount'; // secure API
 
 
 function App() {
@@ -17,6 +18,8 @@ function App() {
     const savedUser = localStorage.getItem('user');
     return savedUser ? JSON.parse(savedUser) : null;
   });
+
+  const [isEditingAccount, setIsEditingAccount] = useState(false); // state to toggle account update form
 
   // when login is successful, save the token and user data to state
   const handleLoginSuccess = (token, user) => {
@@ -33,8 +36,9 @@ function App() {
     setSelectedGameId(null); // go back to game list on logout
   };
 
-
-
+  const handleUpdateSuccess = (updatedUser) => {
+    setUser(updatedUser);
+  };
 
   // use useEffect to fetch the game list from the backend when the component mounts
 useEffect(() => {
@@ -63,6 +67,9 @@ useEffect(() => {
       
       <div claassName="user-bar">
         <span>Welcome, {user ? user.name : 'User'}!</span>
+        <button onClick={() => setIsEditingAccount(!isEditingAccount)} style={{ background: '#34495e', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+            {isEditingAccount ? 'View Games' : 'Edit Account'}
+        </button>
         <button className="logout-button" onClick={handleLogout}>
           Logout
         </button>
@@ -70,10 +77,15 @@ useEffect(() => {
 
 
       <div className="app-content">
-        {loading ? (
+        {/* if editing account, show update form */}
+        {isEditingAccount ? (
+          <UpdateAccount 
+            onUpdateSuccess={handleUpdateSuccess} 
+            onCancel={() => setIsEditingAccount(false)} 
+          />
+        ) : loading ? (
           <p className="status-message">Loading...</p>
         ) : selectedGameId ? (
-          /* if game is selected, show the review page */
           <div>
             <button className="back-button" onClick={() => setSelectedGameId(null)}>
               ⬅ Back to Games
@@ -81,8 +93,6 @@ useEffect(() => {
             <GameDetails gameId={selectedGameId} />
           </div>
         ) : (
-          /* if no game is selected, show the game list */
-          /* pass the function to set the selected game ID as a prop */
           <ReviewList reviews={games} onGameClick={setSelectedGameId} />
         )}
       </div>

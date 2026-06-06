@@ -132,11 +132,11 @@ export const GameDetails = ({ gameId }) => {
             onChange={(e) => setFormRating(e.target.value)} // update state on change
             required>
             <option value="">Select Rating</option>
-            <option value="1">⭐⭐⭐⭐⭐ (5/5)</option>
-            <option value="2">⭐⭐⭐⭐ (4/5)</option>
+            <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+            <option value="4">⭐⭐⭐⭐ (4/5)</option>
             <option value="3">⭐⭐⭐ (3/5)</option>
-            <option value="4">⭐⭐ (2/5)</option>
-            <option value="5">⭐ (1/5)</option>
+            <option value="2">⭐⭐ (2/5)</option>
+            <option value="1">⭐ (1/5)</option>
           </select>
         </div>
         <div className="form-group">

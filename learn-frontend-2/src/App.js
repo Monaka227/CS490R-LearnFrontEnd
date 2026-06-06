@@ -66,7 +66,7 @@ useEffect(() => {
       <Header />
       
       <div claassName="user-bar">
-        <span>Welcome, {user ? user.name : 'User'}!</span>
+        <span>Welcome, {user ? user.username : 'User'}!</span>
         <button onClick={() => setIsEditingAccount(!isEditingAccount)} style={{ background: '#34495e', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
             {isEditingAccount ? 'View Games' : 'Edit Account'}
         </button>

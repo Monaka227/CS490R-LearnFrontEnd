@@ -20,11 +20,13 @@ function App() {
   });
 
   const [isEditingAccount, setIsEditingAccount] = useState(false); // state to toggle account update form
+  const [isShowingLogin, setIsShowingLogin] = useState(false); // state to toggle login form
 
   // when login is successful, save the token and user data to state
   const handleLoginSuccess = (token, user) => {
     setToken(token);
     setUser(user);
+    setIsShowingLogin(false); // hide login form on successful login
   };
 
   // logout
@@ -33,6 +35,7 @@ function App() {
     localStorage.removeItem('user');
     setToken(null);
     setUser(null);
+    setIsEditingAccount(false); // exit account editing mode on logout
     setSelectedGameId(null); // go back to game list on logout
   };
 
@@ -41,9 +44,11 @@ function App() {
   };
 
   // use useEffect to fetch the game list from the backend when the component mounts
+  // update: fetch games if user was not logged in.
 useEffect(() => {
-    if (!token) return; // if not logged in, don't fetch games
+    // if (!token) return; // if not logged in, don't fetch games
 
+    setLoading(true);
     // get the game list from the backend API
     fetch('http://localhost:3000/api/games')
       .then((response) => response.json())
@@ -55,30 +60,41 @@ useEffect(() => {
         console.error('Error:', error);
         setLoading(false);
       });
-  }, [token]); // re-run this effect whenever the token changes (e.g. on login/logout)
-
-  if (!token) {
-    return <Login onLoginSuccess={handleLoginSuccess} />;
-  }
+  }, []); 
 
   return (
     <div className="App">
       <Header />
       
-      <div claassName="user-bar">
-        <span>Welcome, {user ? user.username : 'User'}!</span>
-        <button onClick={() => setIsEditingAccount(!isEditingAccount)} style={{ background: '#34495e', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-            {isEditingAccount ? 'View Games' : 'Edit Account'}
-        </button>
-        <button className="logout-button" onClick={handleLogout}>
-          Logout
-        </button>
+      
+      <div className="user-bar" style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '10px', background: '#f8f9fa', justifyContent: 'flex-end' }}>
+        {token && user ? (
+          <>
+            <span>Welcome, {user.username}!</span>
+            <button onClick={() => setIsEditingAccount(!isEditingAccount)} style={{ background: '#34495e', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                {isEditingAccount ? 'View Games' : 'Edit Account'}
+            </button>
+            <button className="logout-button" onClick={handleLogout} style={{ background: '#e74c3c', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <span>Welcome, Guest!</span>
+            <button onClick={() => setIsShowingLogin(!isShowingLogin)} style={{ background: '#2ecc71', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+              {isShowingLogin ? 'Back to Content' : 'Login / Sign Up'}
+            </button>
+          </>
+        )}
       </div>
 
 
       <div className="app-content">
         {/* if editing account, show update form */}
-        {isEditingAccount ? (
+        {isShowingLogin && !token ? (
+          <Login onLoginSuccess={handleLoginSuccess} />
+        ) :
+        isEditingAccount ? (
           <UpdateAccount 
             onUpdateSuccess={handleUpdateSuccess} 
             onCancel={() => setIsEditingAccount(false)} 

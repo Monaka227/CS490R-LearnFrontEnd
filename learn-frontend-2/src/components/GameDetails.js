@@ -58,7 +58,17 @@ export const GameDetails = ({ gameId }) => {
       .then((savedReview) => {
         console.log("Review submitted successfully:", savedReview);
 
+
+
+        const reviewWithUser = {
+          user_id: {
+            id: currentUser?.id,
+            username: currentUser?.username
+          }
+        }
+
         setReviews((prevReviews) => [...prevReviews, savedReview]);
+
         // Reset form fields after successful submission
         setFormTitle('');
         setFormRating(5);
@@ -111,47 +121,53 @@ export const GameDetails = ({ gameId }) => {
     <div className="game-details">
       <h2>User Reviews</h2>
       
-      <form className="review-form" onSubmit={handleSubmit}>
-        <h3>Write a new Review</h3>
-        <div className="form-group">
-          <label>Title: </label>
-          <input 
-            type="text" 
-            name="title" 
-            placeholder="Review 
-            Title" required 
-            value={formTitle}
-            onChange={(e) => setFormTitle(e.target.value)}
-          />
-        </div>
-        <div className="form-group">
-          <label>Rating: </label>
-          <select 
-            name="rating" 
-            value={formRating} // controlled component
-            onChange={(e) => setFormRating(e.target.value)} // update state on change
-            required>
-            <option value="">Select Rating</option>
-            <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
-            <option value="4">⭐⭐⭐⭐ (4/5)</option>
-            <option value="3">⭐⭐⭐ (3/5)</option>
-            <option value="2">⭐⭐ (2/5)</option>
-            <option value="1">⭐ (1/5)</option>
-          </select>
-        </div>
-        <div className="form-group">
-          <label>Review: </label>
-          <textarea 
-            name="body" 
-            placeholder="Write your review here..." 
-            required 
-            value={formBody}
-            onChange={(e) => setFormBody(e.target.value)}
-          ></textarea>
-        </div>
-        <button type="submit" className="submit-button">Post Review</button>
+      {token && currentUser ? (
+        <form className="review-form" onSubmit={handleSubmit}>
+          <h3>Write a new Review</h3>
+          <div className="form-group">
+            <label>Title: </label>
+            <input 
+              type="text" 
+              name="title" 
+              placeholder="Review 
+              Title" required 
+              value={formTitle}
+              onChange={(e) => setFormTitle(e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label>Rating: </label>
+            <select 
+              name="rating" 
+              value={formRating} // controlled component
+              onChange={(e) => setFormRating(e.target.value)} // update state on change
+              required>
+              <option value="">Select Rating</option>
+              <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+              <option value="4">⭐⭐⭐⭐ (4/5)</option>
+              <option value="3">⭐⭐⭐ (3/5)</option>
+              <option value="2">⭐⭐ (2/5)</option>
+              <option value="1">⭐ (1/5)</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Review: </label>
+            <textarea 
+              name="body" 
+              placeholder="Write your review here..." 
+              required 
+              value={formBody}
+              onChange={(e) => setFormBody(e.target.value)}
+            ></textarea>
+          </div>
+          <button type="submit" className="submit-button">Post Review</button>
 
-      </form>
+        </form>
+      ) : (
+        <div style={{ padding: '20px', background: '#edf2f7', borderRadius: '8px', textAlign: 'center', marginBottom: '20px', fontWeight: 'bold', color: '#4a5568' }}>
+          🔒 Please log in to write a review.
+        </div>
+      )}
 
 
 
@@ -161,13 +177,23 @@ export const GameDetails = ({ gameId }) => {
         <div className="review-list">
           {reviews.map((rev) => {
             // check if the current user is the owner of the review or an admin to determine if they can delete the review
-            const isOwner = rev.user_id === currentUser?.id;
+            const reviewOwnerId = rev.user_id?.id || rev.user_id; // handle both populated and unpopulated user_id
+            
+            const isOwner = reviewOwnerId === currentUser?.id;
             const isAdmin = currentUser?.role === 'admin';
             const canDelete = isOwner || isAdmin;
+
+            const reviewerName = rev.user_id?.username || "Unknown User"; // display username if available, otherwise show "Unknown User"
 
             return (
               <div key={rev._id} className="review-card" style={{ cursor: 'default', position: 'relative' }}>
                 <h3>{rev.title}</h3>
+
+                {/* add a badge for the reviewer's username */}
+                <div className="reviewer-badge" style={{ fontSize: '12px', color: '#718096', marginBottom: '8px', fontWeight: '500' }}>
+                  By: <span style={{ color: '#2b6cb0', fontWeight: 'bold' }}>{reviewerName}</span>
+                </div>
+
                 <p className="review-rating" style={{ color: '#f39c12' }}>
                   Rating: {'⭐'.repeat(rev.rating)} ({rev.rating}/5)
                 </p>
@@ -191,7 +217,7 @@ export const GameDetails = ({ gameId }) => {
                       fontWeight: 'bold'
                     }}
                   >
-                    Delete
+                    {isAdmin ? '🛡️ Admin Delete' : 'Delete'}
                   </button>
                 )}
               </div>

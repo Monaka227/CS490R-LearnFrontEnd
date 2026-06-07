@@ -5,6 +5,7 @@ import { Header } from './components/Header';
 import { GameDetails } from './components/GameDetails';
 import { Login } from './components/Login'; // week4
 import { UpdateAccount } from './components/UpdateAccount'; // secure API
+import { AddGame } from './components/AddGame'; // week5 
 
 
 function App() {
@@ -38,6 +39,10 @@ function App() {
     setIsEditingAccount(false); // exit account editing mode on logout
     setSelectedGameId(null); // go back to game list on logout
   };
+
+  const handleGameAdded = (newGame) => {
+    setGames((prevGames) => [newGame,...prevGames]);
+  }
 
   const handleUpdateSuccess = (updatedUser) => {
     setUser(updatedUser);
@@ -109,7 +114,13 @@ useEffect(() => {
             <GameDetails gameId={selectedGameId} />
           </div>
         ) : (
-          <ReviewList reviews={games} onGameClick={setSelectedGameId} />
+          <div>
+            {/* if logged in and admin, show add game form */}
+            { token && user?.role === 'admin' && (
+              <AddGame onGameAdded={handleGameAdded} />
+            )}
+            <ReviewList reviews={games} onGameClick={setSelectedGameId} />
+          </div>
         )}
       </div>
     </div>

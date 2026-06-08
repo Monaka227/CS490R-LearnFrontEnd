@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './AdminPanel.css';
 
 export const AddGame = ({ onGameAdded }) => {
   const [title, setTitle] = useState('');
@@ -53,53 +54,53 @@ export const AddGame = ({ onGameAdded }) => {
   };
 
   return (
-    <div style={{ background: '#fff', padding: '25px', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', marginBottom: '30px', border: '2px solid #2cc71' }}>
-      <h3 style={{ marginTop: 0, color: '#2c3e50', borderBottom: '2px solid #ecf0f1', paddingBottom: '10px' }}>
+    <div className="admin-panel-container">
+      <h3 className="admin-panel-title">
         🛡️ Admin Panel: Create New Board Game
       </h3>
-      <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+      <form onSubmit={handleSubmit} className="admin-form-grid">
         
-        <div style={{ gridColumn: '1 / -1' }}>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px' }}>Game Title *</label>
+        <div className="form-field-full">
+          <label className="admin-form-group-label">Game Title *</label>
           <input 
             type="text" value={title} onChange={(e) => setTitle(e.target.value)} required 
             placeholder="e.g., Terraforming Mars"
-            style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+            className="admin-input-text"
           />
         </div>
 
         <div>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px' }}>Publisher</label>
+          <label className="admin-form-group-label">Publisher</label>
           <input 
             type="text" value={publisher} onChange={(e) => setPublisher(e.target.value)} 
             placeholder="e.g., FryxGames"
-            style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+            className="admin-input-text"
           />
         </div>
 
         <div>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px' }}>Designer</label>
+          <label className="admin-form-group-label">Designer</label>
           <input 
             type="text" value={designer} onChange={(e) => setDesigner(e.target.value)} 
             placeholder="e.g., Jacob Fryxelius"
-            style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+            className="admin-input-text"
           />
         </div>
 
-        <div style={{ gridColumn: '1 / -1' }}>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px' }}>Image URL</label>
+        <div className="form-field-full">
+          <label className="admin-form-group-label">Image URL</label>
           <input 
             type="url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} 
             placeholder="https://example.com/game-image.jpg"
-            style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+            className="admin-input-text"
           />
         </div>
 
         <div>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px' }}>Initial System Rating</label>
+          <label className="admin-form-group-label">Initial System Rating</label>
           <select 
             value={rating} onChange={(e) => setRating(Number(e.target.value))}
-            style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+            className="admin-select"
           >
             <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
             <option value="4">⭐⭐⭐⭐ (4/5)</option>
@@ -109,16 +110,16 @@ export const AddGame = ({ onGameAdded }) => {
           </select>
         </div>
 
-        <div style={{ gridColumn: '1 / -1' }}>
-          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px' }}>Description</label>
+        <div className="admin-form-group form-field-full">
+          <label className="admin-form-group-label">Description</label>
           <textarea 
             value={description} onChange={(e) => setDescription(e.target.value)} 
             placeholder="Describe the gameplay, mechanics, and components..."
-            style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', minHeight: '80px' }}
+            className="admin-textarea"
           />
         </div>
 
-        <button type="submit" style={{ gridColumn: '1 / -1', background: '#2ecc71', color: 'white', border: 'none', padding: '12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '15px' }}>
+        <button type="submit" className="admin-submit-button">
           🚀 Publish New Game to Database
         </button>
       </form>

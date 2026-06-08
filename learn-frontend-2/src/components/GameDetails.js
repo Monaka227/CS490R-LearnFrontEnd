@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './ReviewCard.css';
+import './AdminPanel.css';
 
-export const GameDetails = ({ gameId }) => {
+export const GameDetails = ({ gameId, onGameDeleted }) => {
+  const [game, setGame] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -13,6 +15,7 @@ export const GameDetails = ({ gameId }) => {
   // Secure API
   const token = localStorage.getItem('token');
   const currentUser = JSON.parse(localStorage.getItem('user'));
+  const isAdmin = currentUser?.role === 'admin';
 
   useEffect(() => {
     // Week 3: not fetching all game reviews and then filtering on the frontend, but directly fetching only the reviews for the selected game from the backend!
@@ -21,8 +24,15 @@ export const GameDetails = ({ gameId }) => {
         if (!res.ok) throw new Error("Failed to fetch reviews for this game");
         return res.json();
       })
+      .then((gameData) => setGame(gameData))
+      .catch((err) => console.error('Error fetching game details:', err));
+        
+    fetch(`http://localhost:3000/api/reviews/games/${gameId}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch reviews for this game");
+        return res.json();
+      })
       .then((data) => {
-        // data should already be filtered reviews for the selected game, so we can directly set it to state
         setReviews(data);
         setLoading(false);
       })
@@ -31,6 +41,29 @@ export const GameDetails = ({ gameId }) => {
         setLoading(false);
       });
   }, [gameId]);
+
+  const handleDeleteGame = () => {
+    if (!window.confirm("Are you sure you want to delete this game?")) return;
+
+    fetch(`http://localhost:3000/api/games/${gameId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to delete game");
+        return res.json();
+      })
+      .then(() => {
+        console.log("Game deleted successfully");
+        onGameDeleted(gameId);
+      })
+      .catch((err) => {
+        console.error("Error deleting game:", err);
+        alert("Failed to delete game. Please try again.");
+      });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -56,18 +89,14 @@ export const GameDetails = ({ gameId }) => {
         return res.json();
       })
       .then((savedReview) => {
-        console.log("Review submitted successfully:", savedReview);
-
-
-
         const reviewWithUser = {
+          ...savedReview,
           user_id: {
             id: currentUser?.id,
             username: currentUser?.username
           }
-        }
-
-        setReviews((prevReviews) => [...prevReviews, savedReview]);
+        };
+        setReviews((prevReviews) => [...prevReviews, reviewWithUser]);
 
         // Reset form fields after successful submission
         setFormTitle('');
@@ -78,20 +107,10 @@ export const GameDetails = ({ gameId }) => {
         console.error("Error submitting review:", err);
         alert("Failed to submit review. Please try again.");
       });
+    };
 
-    // For now, just log the form data to the console
-    // check all fields
-    console.log("--- Form Submitted ---");
-    console.log("Game ID:", gameId);
-    console.log("Title:", formTitle);
-    console.log("Rating:", formRating);
-    console.log("Body:", formBody);
 
-    // Here I would typically send the form data to the backend API to create a new review
-
-  }
-
-  const handleDelete = (reviewId) => {
+  const handleDeleteReview = (reviewId) => {
     if (!window.confirm("Are you sure you want to delete this review?")) return;
 
     fetch(`http://localhost:3000/api/reviews/${reviewId}`, {
@@ -119,9 +138,35 @@ export const GameDetails = ({ gameId }) => {
 
   return (
     <div className="game-details">
+        {game && (
+        <div className="game-main-header">
+          <h1 className="game-title-text">{game.title}</h1>
+          
+          <div className="game-flex-layout">
+            {game.image_url && (
+              <img src={game.image_url} alt={game.title} className="game-cover-image" />
+            )}
+            
+            <div className="game-meta-info">
+              <p>🏭 <strong>Publisher:</strong> {game.publisher || 'N/A'}</p>
+              <p>🎨 <strong>Designer:</strong> {game.designer || 'N/A'}</p>
+              <p>📊 <strong>Base Rating:</strong> {'⭐'.repeat(game.rating || 5)} ({game.rating || 5}/5)</p>
+              <p className="game-description-text">{game.description}</p>
+              
+              {/* game delete button for admins*/}
+              {token && isAdmin && (
+                <button onClick={handleDeleteGame} className="admin-game-delete-btn">
+                  🗑️ Admin: Delete This Game
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <h2>User Reviews</h2>
-      
-      {token && currentUser ? (
+
+        {token && currentUser ? (
         <form className="review-form" onSubmit={handleSubmit}>
           <h3>Write a new Review</h3>
           <div className="form-group">
@@ -177,7 +222,7 @@ export const GameDetails = ({ gameId }) => {
         <div className="review-list">
           {reviews.map((rev) => {
             // check if the current user is the owner of the review or an admin to determine if they can delete the review
-            const reviewOwnerId = rev.user_id?.id || rev.user_id; // handle both populated and unpopulated user_id
+            const reviewOwnerId = rev.user_id?._id || rev.user_id; // handle both populated and unpopulated user_id
             
             const isOwner = reviewOwnerId === currentUser?.id;
             const isAdmin = currentUser?.role === 'admin';
@@ -186,11 +231,11 @@ export const GameDetails = ({ gameId }) => {
             const reviewerName = rev.user_id?.username || "Unknown User"; // display username if available, otherwise show "Unknown User"
 
             return (
-              <div key={rev._id} className="review-card" style={{ cursor: 'default', position: 'relative' }}>
+              <div key={rev._id} className="review-card">
                 <h3>{rev.title}</h3>
 
                 {/* add a badge for the reviewer's username */}
-                <div className="reviewer-badge" style={{ fontSize: '12px', color: '#718096', marginBottom: '8px', fontWeight: '500' }}>
+                <div className="reviewer-badge">
                   By: <span style={{ color: '#2b6cb0', fontWeight: 'bold' }}>{reviewerName}</span>
                 </div>
 
@@ -202,20 +247,8 @@ export const GameDetails = ({ gameId }) => {
                 {/* Delete button for review owners or admins */}
                 {canDelete && (
                   <button 
-                    onClick={() => handleDelete(rev._id)}
-                    style={{
-                      position: 'absolute',
-                      top: '15px',
-                      right: '15px',
-                      background: '#e74c3c',
-                      color: 'white',
-                      border: 'none',
-                      padding: '5px 10px',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      fontSize: '12px',
-                      fontWeight: 'bold'
-                    }}
+                    onClick={() => handleDeleteReview(rev._id)}
+                    className={`delete-btn-base ${isAdmin ? 'admin-delete-btn' : 'user-review-delete-btn'}`}
                   >
                     {isAdmin ? '🛡️ Admin Delete' : 'Delete'}
                   </button>
@@ -228,3 +261,6 @@ export const GameDetails = ({ gameId }) => {
     </div>
   );
 };
+
+
+export default GameDetails;

@@ -111,7 +111,13 @@ useEffect(() => {
             <button className="back-button" onClick={() => setSelectedGameId(null)}>
               ⬅ Back to Games
             </button>
-            <GameDetails gameId={selectedGameId} />
+            <GameDetails 
+              gameId={selectedGameId} 
+              onGameDeleted={(deletedId) => {
+                setGames((prevGames) => prevGames.filter(game => game.id !== deletedId));
+                setSelectedGameId(null);
+              }}
+            />
           </div>
         ) : (
           <div>

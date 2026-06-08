@@ -100,3 +100,125 @@
 .submit-button:hover {
   background-color: #27ae60;
 }
+
+/* game details container */
+.game-details {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: left;
+}
+
+/* game main header */
+.game-main-header {
+  background-color: #ffffff;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+  border: 1px solid #e2e8f0;
+}
+
+.game-title-text {
+  margin: 0 0 15px 0;
+  color: #2c3e50;
+  font-size: 2rem;
+}
+
+.game-flex-layout {
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.game-cover-image {
+  max-width: 200px;
+  width: 100%;
+  border-radius: 6px;
+  object-fit: cover;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.game-meta-info {
+  flex: 1;
+  min-width: 250px;
+}
+
+.game-meta-info p {
+  margin: 8px 0;
+  color: #4a5568;
+  font-size: 15px;
+}
+
+.game-description-text {
+  margin-top: 15px;
+  color: #555555;
+  line-height: 1.6;
+  background-color: #f8fafc;
+  padding: 12px;
+  border-radius: 6px;
+}
+
+/* if login is required */
+.login-required-banner {
+  padding: 20px;
+  background-color: #edf2f7;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 25px;
+  font-weight: bold;
+  color: #4a5568;
+  border: 1px solid #cbd5e0;
+}
+
+.reviewer-badge {
+  font-size: 12px;
+  color: #718096;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.reviewer-name {
+  color: #2b6cb0;
+  font-weight: bold;
+}
+
+.review-card {
+  position: relative;
+  cursor: default;
+  padding-bottom: 20px;
+}
+
+/* delete button base styles */
+.delete-btn-base {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+/* delete button for users */
+.user-review-delete-btn {
+  background-color: #e74c3c;
+}
+
+.user-review-delete-btn:hover {
+  background-color: #c0392b;
+}
+
+/* delete button for admins */
+.admin-delete-btn {
+  background-color: #c0392b;
+}
+
+.admin-delete-btn:hover {
+  background-color: #962d22;
+}

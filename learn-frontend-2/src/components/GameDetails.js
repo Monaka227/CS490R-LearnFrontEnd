@@ -153,6 +153,20 @@ export const GameDetails = ({ gameId, onGameDeleted }) => {
               <p>📊 <strong>Base Rating:</strong> {'⭐'.repeat(game.rating || 5)} ({game.rating || 5}/5)</p>
               <p className="game-description-text">{game.description}</p>
               
+              {/* calculate and display average user rating based on reviews */}
+              <p>📈 <strong>User Average Rating:</strong> {
+                reviews.length > 0
+                 ? (
+                  <span>
+                    {'⭐'.repeat(Math.round(reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length))} 
+                    {` (${(reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)}/5 from ${reviews.length} reviews)`}
+                  </span>
+                 )
+                 : <span>No reviews yet.</span>
+              }</p>
+
+              <p className="game-description-text">{game.description}</p>
+
               {/* game delete button for admins*/}
               {token && isAdmin && (
                 <button onClick={handleDeleteGame} className="admin-game-delete-btn">

@@ -6,7 +6,7 @@ import { GameDetails } from './components/GameDetails';
 import { Login } from './components/Login'; // week4
 import { UpdateAccount } from './components/UpdateAccount'; // secure API
 import { AddGame } from './components/AddGame'; // week5 
-
+import './components/NavBar.css'; // for user bar styling
 
 function App() {
   // make a state to keep the game lists
@@ -23,11 +23,13 @@ function App() {
   const [isEditingAccount, setIsEditingAccount] = useState(false); // state to toggle account update form
   const [isShowingLogin, setIsShowingLogin] = useState(false); // state to toggle login form
 
+  const [isShowingMyReviews, setIsShowingMyReviews] = useState(false); // state to toggle login form
   // when login is successful, save the token and user data to state
   const handleLoginSuccess = (token, user) => {
     setToken(token);
     setUser(user);
     setIsShowingLogin(false); // hide login form on successful login
+    setIsShowingMyReviews(false);
   };
 
   // logout
@@ -38,6 +40,7 @@ function App() {
     setUser(null);
     setIsEditingAccount(false); // exit account editing mode on logout
     setSelectedGameId(null); // go back to game list on logout
+    setIsShowingMyReviews(false);
   };
 
   const handleGameAdded = (newGame) => {
@@ -47,6 +50,14 @@ function App() {
   const handleUpdateSuccess = (updatedUser) => {
     setUser(updatedUser);
   };
+
+  // common helper to reset 
+  const showHomeView = () => {
+    setSelectedGameId(null);
+    setIsEditingAccount(false);
+    setIsShowingLogin(false);
+    setIsShowingMyReviews(false);
+  }
 
   // use useEffect to fetch the game list from the backend when the component mounts
   // update: fetch games if user was not logged in.
@@ -70,28 +81,74 @@ useEffect(() => {
   return (
     <div className="App">
       <Header />
-      
-      
-      <div className="user-bar" style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '10px', background: '#f8f9fa', justifyContent: 'flex-end' }}>
-        {token && user ? (
-          <>
-            <span>Welcome, {user.username}!</span>
-            <button onClick={() => setIsEditingAccount(!isEditingAccount)} style={{ background: '#34495e', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-                {isEditingAccount ? 'View Games' : 'Edit Account'}
+      <nav className="navbar">
+        <div className="navbar-brand" onClick={showHomeView}>
+          🎲 Tabletop Treasures
+        </div>
+
+      <div className="navbar-menu">
+        {/* Game list */}
+        <button 
+            className={`nav-link ${(!isShowingLogin && !isEditingAccount && !isShowingMyReviews) ? 'active' : ''}`}
+            onClick={showHomeView}
+          >
+            🏠 Home (Games)
+        </button>
+
+        {/* review management (only display if user is logged in) */}
+          {token && (
+            <button 
+              className={`nav-link ${isShowingMyReviews ? 'active' : ''}`}
+              onClick={() => {
+                setIsShowingMyReviews(true);
+                setIsEditingAccount(false);
+                setIsShowingLogin(false);
+                setSelectedGameId(null);
+              }}
+            >
+              ✍️ My Reviews
             </button>
-            <button className="logout-button" onClick={handleLogout} style={{ background: '#e74c3c', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-              Logout
-            </button>
-          </>
-        ) : (
-          <>
-            <span>Welcome, Guest!</span>
-            <button onClick={() => setIsShowingLogin(!isShowingLogin)} style={{ background: '#2ecc71', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-              {isShowingLogin ? 'Back to Content' : 'Login / Sign Up'}
-            </button>
-          </>
-        )}
-      </div>
+          )}
+
+          {/* login page */}
+          <div className="navbar-user-section">
+            {token && user ? (
+              <>
+                <span>Welcome, {user.username}!</span>
+                <button 
+                  className={`nav-link ${isEditingAccount ? 'active' : ''}`}
+                  onClick={() => {
+                    setIsEditingAccount(!isEditingAccount);
+                    setIsShowingLogin(false);
+                    setIsShowingMyReviews(false);
+                    setSelectedGameId(null);
+                  }}
+                >
+                  {isEditingAccount ? 'View Games' : 'Edit Account'}
+                </button>
+                <button className="btn-logout" onClick={handleLogout} style={{ background: '#e74c3c', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <span>Welcome, Guest!</span>
+                <button
+                  className={`nav-link ${isShowingLogin ? 'active' : ''}`}
+                  onClick={() => {
+                    setIsShowingLogin(!isShowingLogin);
+                    setIsEditingAccount(false);
+                    setIsShowingMyReviews(false);
+                    setSelectedGameId(null);
+                  }}
+                >
+                  {isShowingLogin ? 'Back to Content' : 'Login / Sign Up'}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </nav>
 
 
       <div className="app-content">
@@ -104,7 +161,19 @@ useEffect(() => {
             onUpdateSuccess={handleUpdateSuccess} 
             onCancel={() => setIsEditingAccount(false)} 
           />
-        ) : loading ? (
+        ) : 
+        /* my review */
+        isShowingMyReviews && token ? (
+          <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'left' }}>
+            <h2>📋 My Reviews</h2>
+            <p style={{ color: '#718096' }}>Manage the reviews you have posted.</p>
+            {/* <MyReviews userId={user?.id || user?._id} token={token} /> */}
+            <p style={{ padding: '20px', background: '#f8f9fa', borderRadius: '6px', textAlign: 'center' }}>
+              ℹ️ Your personal review list component will be rendered here.
+            </p>
+          </div>
+        ) :
+        loading ? (
           <p className="status-message">Loading...</p>
         ) : selectedGameId ? (
           <div>

@@ -19,7 +19,7 @@ export const GameDetails = ({ gameId, onGameDeleted }) => {
 
   useEffect(() => {
     // Week 3: not fetching all game reviews and then filtering on the frontend, but directly fetching only the reviews for the selected game from the backend!
-    fetch(`http://localhost:3000/api/reviews/games/${gameId}`) // <-- backend URL
+    fetch(`http://localhost:3000/api/games/${gameId}`) // <-- backend URL
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch reviews for this game");
         return res.json();
@@ -138,6 +138,9 @@ export const GameDetails = ({ gameId, onGameDeleted }) => {
 
   return (
     <div className="game-details">
+      <h2 className="game-details-header">
+        🎯 Board Game Details
+      </h2>
         {game && (
         <div className="game-main-header">
           <h1 className="game-title-text">{game.title}</h1>

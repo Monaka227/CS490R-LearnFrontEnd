@@ -7,6 +7,7 @@ import { Login } from './components/Login'; // week4
 import { UpdateAccount } from './components/UpdateAccount'; // secure API
 import { AddGame } from './components/AddGame'; // week5 
 import './components/NavBar.css'; // for user bar styling
+import { MyReviews } from './components/MyReviews';
 
 function App() {
   // make a state to keep the game lists
@@ -167,10 +168,15 @@ useEffect(() => {
           <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'left' }}>
             <h2>📋 My Reviews</h2>
             <p style={{ color: '#718096' }}>Manage the reviews you have posted.</p>
-            {/* <MyReviews userId={user?.id || user?._id} token={token} /> */}
-            <p style={{ padding: '20px', background: '#f8f9fa', borderRadius: '6px', textAlign: 'center' }}>
-              ℹ️ Your personal review list component will be rendered here.
-            </p>
+
+            <MyReviews 
+              token = {token}
+              currentUserId={user?.id || user?._id} 
+              onGameClick={(gameId) => {
+                setSelectedGameId(gameId);
+                setIsShowingMyReviews(false); 
+              }} 
+            />
           </div>
         ) :
         loading ? (

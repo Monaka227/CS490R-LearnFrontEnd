@@ -17,6 +17,14 @@ export const GameDetails = ({ gameId, onGameDeleted }) => {
   const currentUser = JSON.parse(localStorage.getItem('user'));
   const isAdmin = currentUser?.role === 'admin';
 
+  // game editing states
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editPublisher, setEditPublisher] = useState('');
+  const [editDesigner, setEditDesigner] = useState('');
+  const [editImageUrl, setEditImageUrl] = useState('');
+
   useEffect(() => {
     // Week 3: not fetching all game reviews and then filtering on the frontend, but directly fetching only the reviews for the selected game from the backend!
     fetch(`http://localhost:3000/api/games/${gameId}`) // <-- backend URL
@@ -24,7 +32,15 @@ export const GameDetails = ({ gameId, onGameDeleted }) => {
         if (!res.ok) throw new Error("Failed to fetch reviews for this game");
         return res.json();
       })
-      .then((gameData) => setGame(gameData))
+      .then((gameData) => {
+        setGame(gameData);
+
+        setEditTitle(gameData.title || '');
+        setEditDescription(gameData.description || '');
+        setEditPublisher(gameData.publisher || '');
+        setEditDesigner(gameData.designer || '');
+        setEditImageUrl(gameData.image_url || '');
+      })
       .catch((err) => console.error('Error fetching game details:', err));
         
     fetch(`http://localhost:3000/api/reviews/games/${gameId}`)
@@ -41,6 +57,41 @@ export const GameDetails = ({ gameId, onGameDeleted }) => {
         setLoading(false);
       });
   }, [gameId]);
+
+  const  handleUpdateGame = (e) => {
+    e.preventDefault();
+
+    const updateData = {
+      title: editTitle,
+      description: editDescription,
+      publisher: editPublisher,
+      designer: editDesigner,
+      image_url: editImageUrl
+    };
+
+    fetch(`http://localhost:3000/api/games/${gameId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      },
+      body: JSON.stringify(updateData)
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to update game");
+        return res.json();
+      })
+      .then((savedGame) => {
+        console.log("Game updated successfully:", savedGame);
+        setGame(savedGame); // refresh UI
+        setIsEditing(false); // exit from editing mode
+        alert("Game updated successfully! 🎉");
+      })
+      .catch((err) => {
+        console.error("Error updating game:", err);
+        alert("Failed to update game. Please check your validation inputs.");
+      });
+  }
 
   const handleDeleteGame = () => {
     if (!window.confirm("Are you sure you want to delete this game?")) return;
@@ -142,20 +193,65 @@ export const GameDetails = ({ gameId, onGameDeleted }) => {
         🎯 Board Game Details
       </h2>
         {game && (
-        <div className="game-main-header">
-          <h1 className="game-title-text">{game.title}</h1>
-          
-          <div className="game-flex-layout">
-            {game.image_url && (
-              <img src={game.image_url} alt={game.title} className="game-cover-image" />
-            )}
-            
-            <div className="game-meta-info">
-              <p>🏭 <strong>Publisher:</strong> {game.publisher || 'N/A'}</p>
-              <p>🎨 <strong>Designer:</strong> {game.designer || 'N/A'}</p>
-              <p>📊 <strong>Base Rating:</strong> {'⭐'.repeat(game.rating || 5)} ({game.rating || 5}/5)</p>
-              <p className="game-description-text">{game.description}</p>
+        <div className="game-main-header game-main-header-container">
+          {/* switch button to edit */}
+          {token && isAdmin && (
+            <button 
+              onClick={() => setIsEditing(!isEditing)} 
+              classname="admin-edit-toggle-btn"
+            >
+              {isEditing ? '❌ Cancel Edit' : '✏️ Admin: Edit Game'}
+            </button>
+          )}
+
+          {isEditing ? (
+            <form onSubmit={handleUpdateGame} className="game-edit-form">
+              <h3 className="game-edit-form-title">✏️ Edit Game Properties</h3>
               
+              <div className="edit-form-group">
+                <label>Title (Required):</label>
+                <input type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} required />
+              </div>
+
+              <div className="edit-form-group">
+                <label>Publisher:</label>
+                <input type="text" value={editPublisher} onChange={(e) => setEditPublisher(e.target.value)} />
+              </div>
+
+              <div className="edit-form-group">
+                <label>Designer:</label>
+                <input type="text" value={editDesigner} onChange={(e) => setEditDesigner(e.target.value)} />
+              </div>
+
+              <div className="edit-form-group">
+                <label>Image URL / Path:</label>
+                <input type="text" value={editImageUrl} onChange={(e) => setEditImageUrl(e.target.value)} />
+              </div>
+
+              <div className="edit-form-group">
+                <label>Description:</label>
+                <textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} rows="4"></textarea>
+              </div>
+
+              <button type="submit" className="btn-save-changes">
+                💾 Save Changes
+              </button>
+            </form>
+          ) : (
+            <>
+              <h1 className="game-title-text" style={{ marginTop: '20px'}}>{game.title}</h1>
+              
+              <div className="game-flex-layout">
+                {game.image_url && (
+                  <img src={game.image_url} alt={game.title} className="game-cover-image" />
+                )}
+            
+              <div className="game-meta-info">
+                <p>🏭 <strong>Publisher:</strong> {game.publisher || 'N/A'}</p>
+                <p>🎨 <strong>Designer:</strong> {game.designer || 'N/A'}</p>
+                <p>📊 <strong>Base Rating:</strong> {'⭐'.repeat(game.rating || 5)} ({game.rating || 5}/5)</p>
+                <p className="game-description-text">{game.description}</p>
+                
               {/* calculate and display average user rating based on reviews */}
               <p>📈 <strong>User Average Rating:</strong> {
                 reviews.length > 0
@@ -168,16 +264,18 @@ export const GameDetails = ({ gameId, onGameDeleted }) => {
                  : <span>No reviews yet.</span>
               }</p>
 
-              <p className="game-description-text">{game.description}</p>
+                <p className="game-description-text">{game.description}</p>
 
-              {/* game delete button for admins*/}
-              {token && isAdmin && (
-                <button onClick={handleDeleteGame} className="admin-game-delete-btn">
-                  🗑️ Admin: Delete This Game
-                </button>
-              )}
+                {/* game delete button for admins*/}
+                {token && isAdmin && (
+                  <button onClick={handleDeleteGame} className="admin-game-delete-btn">
+                    🗑️ Admin: Delete This Game
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
+          </>
+          )}
         </div>
       )}
 

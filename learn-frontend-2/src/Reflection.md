@@ -1,13 +1,13 @@
 # Reflection
 
 ## What did you ask the AI to do?
-- Because my learning plan had already covered user signup, login, adn editing. I asked AI what features I should add next, and I implemented a feature that allows user to view a list of reviews they've posted.
+- I created the game's edit form myself, so I had AI generate the CSS for it. I also had AI correct some errors.
 
 ## What did it do well?
-- AI proposed me seveal ways to retrive and display reviews. This time, I implemented a method where I first retrieve all reviews and then display only those that match the ID of the currently logged in user.
+- It provided clean and well structured CSS. 
 
 ## What did it get wrong or what did you have to fix?
-- At first, I tried to make it myself but it didn't work due to 400 bad request. The cause was that a vallidation rule which should have been applied only to POST requests on the backend. It was also being applied to GET requests.
+- When GameDetails.js was initially fetched the API endpoint pointed to a review rather than the game, so the publisher and designer data were displayed as N/A. To resolve this issue, I needed to specify the endpoint.
 
 ## What did you learn from working with it?
-- I learned how to fileter elements. I was also happy when based on the error message, I hypothesized thatt it might be a backend issue, and when I actually had the AI analyze it my prediction turned out to be correct.
+- I learned how to better trace network request errors between frontend and backend, and the importance of separating styling from logic to keep React components maintainable.
